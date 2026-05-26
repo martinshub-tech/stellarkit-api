@@ -218,6 +218,42 @@ GET /asset/search?code=USDC
 
 ---
 
+## 📡 Streaming & WebSockets
+
+### `WS /stream/ledgers`
+Establishes a live, real-time WebSocket connection to stream Stellar ledger updates. As new ledgers are closed on the Stellar blockchain, the API receives them via the Stellar Horizon SDK subscription, parses them, and immediately broadcasts them to connected WebSocket clients.
+
+#### Client Connection Example (Vanilla JS)
+```javascript
+const ws = new WebSocket('ws://localhost:3000/stream/ledgers');
+
+ws.onopen = () => {
+  console.log('Connected to StellarKit ledger stream!');
+};
+
+ws.onmessage = (event) => {
+  const ledger = JSON.parse(event.data);
+  console.log('New ledger closed:', ledger);
+  // Example output:
+  // {
+  //   "sequence": 51234567,
+  //   "closedAt": "2026-05-26T20:15:00Z",
+  //   "baseFee": 100,
+  //   "transactionCount": 54
+  // }
+};
+
+ws.onerror = (error) => {
+  console.error('WebSocket error:', error);
+};
+
+ws.onclose = () => {
+  console.log('WebSocket connection closed.');
+};
+```
+
+---
+
 ## 🧪 Running Tests
 
 ```bash
@@ -247,6 +283,8 @@ Please read [CONTRIBUTING.md](CONTRIBUTING.md) before submitting.
 
 ```
 stellarkit-api/
+├── scripts/
+│   └── ws-client-demo.js  # Runnable CLI demo for real-time ledger stream
 ├── src/
 │   ├── config/
 │   │   └── stellar.js         # Stellar SDK + Horizon setup
@@ -262,9 +300,11 @@ stellarkit-api/
 │   ├── utils/
 │   │   ├── response.js        # Response helpers
 │   │   └── validators.js      # Input validation helpers
-│   └── index.js               # App entry point
+│   ├── index.js               # App entry point
+│   └── websocket.js           # WebSocket stream handler
 ├── tests/
-│   └── api.test.js
+│   ├── api.test.js
+│   └── websocket.test.js      # WebSocket stream integration tests
 ├── .env.example
 ├── package.json
 └── README.md

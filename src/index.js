@@ -4,6 +4,8 @@ const helmet = require("helmet");
 const cors = require("cors");
 const morgan = require("morgan");
 
+const { setupWebSocket } = require("./websocket");
+
 const rateLimiter = require("./middleware/rateLimiter");
 const errorHandler = require("./middleware/errorHandler");
 
@@ -66,6 +68,7 @@ app.get("/", (req, res) => {
         { method: "GET", path: "/transactions/:id/operations",      description: "Operation history for an account" },
         { method: "GET", path: "/asset/:code/:issuer",              description: "Asset metadata and statistics" },
         { method: "GET", path: "/asset/search?code=:code",          description: "Search assets by code across all issuers" },
+        { method: "WS",  path: "/stream/ledgers",                  description: "Real-time stream of live Stellar ledger updates" },
       ],
       docs: "https://github.com/stellarkit-lab-devtools/stellarkit-api#readme",
     },
@@ -88,11 +91,12 @@ app.use(errorHandler);
 
 // ── Start ────────────────────────────────────────────────────────────────────
 if (require.main === module) {
-  app.listen(PORT, () => {
+  const server = app.listen(PORT, () => {
     console.log(`\n🚀 StellarKit API running on port ${PORT}`);
     console.log(`🌐 Network : ${process.env.STELLAR_NETWORK || "testnet"}`);
     console.log(`📖 Docs    : http://localhost:${PORT}/\n`);
   });
+  setupWebSocket(server);
 }
 
 module.exports = app;
