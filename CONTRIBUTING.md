@@ -58,6 +58,14 @@ npm run dev
 - Use the `success()` helper from `src/utils/response.js` for consistent responses
 - Validate all user inputs with helpers from `src/utils/validators.js`
 
+## 🔍 Linting
+
+This project uses ESLint with `eslint:recommended` rules.
+
+- Run: `npm run lint`
+- Expected: lint should pass with no errors before opening a PR.
+
+
 ---
 
 ## 💬 Questions?
